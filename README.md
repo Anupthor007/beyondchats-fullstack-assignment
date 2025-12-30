@@ -1,10 +1,33 @@
-# BeyondChats Full Stack Assignment
+# BeyondChats Full‑Stack Assignment
 
-## Overview
+A full‑stack web application that scrapes articles from the BeyondChats blog, stores the original content in MongoDB, rewrites selected articles using an LLM, and displays both original and updated versions via a React frontend.
 
-This project is a full‑stack web application built as part of the BeyondChats Full Stack Intern assignment. The system scrapes blog articles from the BeyondChats website, rewrites them using a Large Language Model (LLM), stores both original and updated versions in MongoDB, and displays them in a clean, responsive React frontend.
+This project was built as part of the **BeyondChats – Full Stack Web Developer Intern Assignment**.
 
-The goal of the project is to demonstrate real‑world backend design, API separation, LLM integration, and frontend presentation.
+---
+
+## Live Demo
+
+* **Frontend **
+  [https://beyondchats-fullstack-assignment-tau.vercel.app/](https://beyondchats-fullstack-assignment-tau.vercel.app/)
+
+* **Backend API **
+  [https://beyondchats-fullstack-assignment-felu.onrender.com/api/articles](https://beyondchats-fullstack-assignment-felu.onrender.com/api/articles)
+
+> Note: I have hosted backend on Render Free Tier so it will some time to load due to cold start.
+
+---
+
+## Features
+
+* Scrapes articles from the BeyondChats blog
+* Stores original articles in MongoDB
+* Rewrites articles using an LLM (Groq)
+* Maintains both **original** and **updated** versions
+* RESTful APIs for article retrieval
+* React frontend to display articles
+* Clean separation of backend, AI processing, and frontend
+* Fully deployed backend and frontend
 
 ---
 
@@ -16,54 +39,90 @@ The goal of the project is to demonstrate real‑world backend design, API separ
 * Express.js
 * MongoDB (Mongoose)
 * Cheerio (web scraping)
-* Google Search (reference discovery)
-* Groq LLM (article rewriting)
+* Groq LLM API
 
 ### Frontend
 
 * React (Vite)
 * Axios
-* Plain CSS (no UI libraries)
+* CSS
+
+### Deployment
+
+* Backend: Render
+* Frontend: Vercel
 
 ---
 
-## Key Features
+## Architecture & Data Flow
 
-* Scrapes blog articles from the BeyondChats website
-* Stores original articles in MongoDB
-* Automatically rewrites articles using an LLM for improved clarity and structure
-* Stores rewritten articles as separate entries with references
-* Clean REST API design separating scraping and content creation
-* Responsive frontend displaying both ORIGINAL and UPDATED articles
-* Clear visual distinction between original and updated content
+```
+┌──────────────────┐
+│ BeyondChats Blog │
+└─────────┬────────┘
+          │ (Scrape)
+          ▼
+┌──────────────────────────┐
+│ Scraper (Cheerio)        │
+└─────────┬────────────────┘
+          │
+          ▼
+┌──────────────────────────┐
+│ MongoDB                  │
+│ - Original Articles      │
+│ - Updated Articles       │
+└─────────┬────────────────┘
+          │
+          ▼
+┌──────────────────────────┐
+│ LLM Rewrite (Groq API)   │
+└─────────┬────────────────┘
+          │
+          ▼
+┌──────────────────────────┐
+│ Express REST API         │
+│ /api/articles            │
+└─────────┬────────────────┘
+          │
+          ▼
+┌──────────────────────────┐
+│ React Frontend (Vercel)  │
+└──────────────────────────┘
+```
 
 ---
 
-## Project Architecture
+## Project Structure
 
 ```
 beyondchats-fullstack-assignment/
 │
 ├── backend/
 │   ├── src/
-│   │   ├── controllers/   # API logic
-│   │   ├── models/        # Mongoose schemas
-│   │   ├── routes/        # Express routes
-│   │   ├── utils/         # Scraping utilities
-│   │   └── server.js      # App entry point
-│   │
+│   │   ├── config/
+│   │   │   └── db.js
+│   │   ├── controllers/
+│   │   │   └── articleController.js
+│   │   ├── models/
+│   │   │   └── Article.js
+│   │   ├── routes/
+│   │   │   └── articleRoutes.js
+│   │   ├── utils/
+│   │   │   └── scrapeBeyondChats.js
+│   │   └── server.js
 │   ├── scripts/
-│   │   └── rewriteArticles.js  # LLM rewrite automation
-│   │
-│   └── package.json
+│   │   └── rewriteArticles.js
+│   ├── package.json
+│   └── .env
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/         # Page-level components
-│   │   ├── services/      # API calls
-│   │   └── App.jsx
-│   │
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── index.html
 │   └── package.json
 │
 └── README.md
@@ -71,17 +130,31 @@ beyondchats-fullstack-assignment/
 
 ---
 
-## Setup Instructions
+## Environment Variables
 
-### Prerequisites
+Create a `.env` file inside the **backend** directory.
 
-* Node.js (v18 or higher recommended)
-* MongoDB (local or Atlas)
-* Groq API key
+### `.env.example`
+
+```
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+GROQ_API_KEY=your_groq_api_key
+```
+
+### Description
+
+* `PORT` – Port on which backend runs (default: 5000)
+* `MONGO_URI` – MongoDB connection string
+* `GROQ_API_KEY` – API key for Groq LLM
+
+> The `.env` file is intentionally not committed for security reasons.
 
 ---
 
-### Backend Setup
+## Running Locally
+
+### Backend
 
 ```bash
 cd backend
@@ -89,22 +162,7 @@ npm install
 npm run dev
 ```
 
-Create a `.env` file inside the `backend` folder:
-
-```
-MONGO_URI=your_mongodb_connection_string
-GROQ_API_KEY=your_groq_api_key
-```
-
-Backend runs at:
-
-```
-http://localhost:5000
-```
-
----
-
-### Frontend Setup
+### Frontend
 
 ```bash
 cd frontend
@@ -112,104 +170,25 @@ npm install
 npm run dev
 ```
 
-Frontend runs at:
-
-```
-http://localhost:5173
-```
+Frontend will run on `http://localhost:5173` and backend on `http://localhost:5000`.
 
 ---
 
 ## API Endpoints
 
-### Article APIs
+* `GET /api/articles`
+  Fetch all original and updated articles
 
 * `POST /api/articles/scrape`
-
-  * Scrapes articles from the BeyondChats website
-
-* `POST /api/articles`
-
-  * Creates a new article (used by the LLM rewrite script)
-
-* `GET /api/articles`
-
-  * Fetches all articles (original + updated)
-
-* `GET /api/articles/:id`
-
-  * Fetches a single article by ID
-
-* `DELETE /api/articles/:id`
-
-  * Deletes an article
-
----
-
-## Article Rewrite Flow
-
-1. Scrape original articles from BeyondChats
-2. Store original articles in MongoDB
-3. Fetch original articles via API
-4. Search Google for reference articles
-5. Scrape reference content
-6. Rewrite article using Groq LLM
-7. Store rewritten article separately with references
-8. Display both versions in the frontend
-
----
-
-## Architecture & Data Flow
-
-```
-BeyondChats Website
-        │
-        ▼
-Web Scraper (Cheerio)
-        │
-        ▼
-MongoDB
-(Original Articles)
-        │
-        ▼
-Rewrite Script (Node.js)
-  ├─ Google Search (References)
-  ├─ External Article Scraping
-  └─ Groq LLM (Content Rewriting)
-        │
-        ▼
-MongoDB
-(Updated Articles)
-        │
-        ▼
-REST API (Express)
-        │
-        ▼
-React Frontend (Vite)
-```
-
-This architecture separates responsibilities clearly:
-
-* Scraping is isolated from content creation
-* LLM rewriting runs as a background script
-* Frontend consumes data only through APIs
-
----
-
-## Design Decisions
-
-* Scraping and article creation are handled by separate endpoints
-* Original and updated articles are stored as separate documents
-* No UI libraries were used to keep the frontend lightweight and readable
-* LLM rewriting is handled via a standalone script to avoid blocking API requests
+  Scrape and store original articles
 
 ---
 
 ## Notes
 
-* Environment variables are not committed to the repository
-* Commit history reflects the development journey step‑by‑step
-* The project is fully functional and runs locally
+* Render free tier may sleep after inactivity
+* First API request may take a few seconds
+* Frontend automatically consumes deployed backend API
 
 ---
 
@@ -217,4 +196,10 @@ This architecture separates responsibilities clearly:
 
 **Anup Thorat**
 
-B.Tech – Artificial Intelligence & Data Science
+Final year B.Tech student (AI & Data Science)
+
+---
+
+## Status
+
+Project completed and deployed successfully.
