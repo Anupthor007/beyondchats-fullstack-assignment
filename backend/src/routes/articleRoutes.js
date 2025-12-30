@@ -1,6 +1,7 @@
 import express from "express";
 import {
   scrapeAndStoreArticles,
+  createArticle,
   getAllArticles,
   getArticleById,
   deleteArticle,
@@ -8,14 +9,10 @@ import {
 
 const router = express.Router();
 
-// Create
 router.post("/scrape", scrapeAndStoreArticles);
-
-// Read
+router.post("/", createArticle); // <-- IMPORTANT
 router.get("/", getAllArticles);
 router.get("/:id", getArticleById);
-
-// Delete
 router.delete("/:id", deleteArticle);
 
 export default router;

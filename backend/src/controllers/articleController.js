@@ -1,7 +1,7 @@
 import Article from "../models/Article.js";
 import { scrapeBeyondChatsBlogs } from "../utils/scrapeBeyondChats.js";
 
-// SCRAPE + CREATE
+// SCRAPE FROM WEBSITE
 export const scrapeAndStoreArticles = async (req, res) => {
   try {
     const articles = await scrapeBeyondChatsBlogs();
@@ -13,11 +13,8 @@ export const scrapeAndStoreArticles = async (req, res) => {
     const savedArticles = [];
 
     for (const article of articles) {
-      const exists = await Article.findOne({ title: article.title });
-      if (!exists) {
-        const saved = await Article.create(article);
-        savedArticles.push(saved);
-      }
+      const saved = await Article.create(article);
+      savedArticles.push(saved);
     }
 
     res.json({
@@ -30,7 +27,17 @@ export const scrapeAndStoreArticles = async (req, res) => {
   }
 };
 
-// READ ALL
+// CREATE ARTICLE (USED BY LLM SCRIPT)
+export const createArticle = async (req, res) => {
+  try {
+    const article = await Article.create(req.body);
+    res.status(201).json(article);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET ALL ARTICLES
 export const getAllArticles = async (req, res) => {
   try {
     const articles = await Article.find().sort({ createdAt: -1 });
@@ -40,7 +47,7 @@ export const getAllArticles = async (req, res) => {
   }
 };
 
-// READ ONE
+// GET SINGLE ARTICLE
 export const getArticleById = async (req, res) => {
   try {
     const article = await Article.findById(req.params.id);
@@ -53,7 +60,7 @@ export const getArticleById = async (req, res) => {
   }
 };
 
-// DELETE
+// DELETE ARTICLE
 export const deleteArticle = async (req, res) => {
   try {
     const article = await Article.findByIdAndDelete(req.params.id);

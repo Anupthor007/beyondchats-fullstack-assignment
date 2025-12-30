@@ -19,7 +19,7 @@ async function fetchOriginalArticles() {
   return response.data.filter((article) => article.type === "original");
 }
 
-// Google search for reference articles
+// Google search
 async function googleSearch(title) {
   try {
     const results = await googleIt({ query: title });
@@ -41,11 +41,10 @@ async function googleSearch(title) {
 async function scrapeContent(url) {
   const { data } = await axios.get(url);
   const $ = cheerio.load(data);
-
   return $("article").text().trim().slice(0, 2000);
 }
 
-// Rewrite using Groq (LLaMA 3)
+// Rewrite using Groq
 async function rewriteWithGroq(originalContent, references) {
   const referenceText =
     references.length > 0
@@ -56,14 +55,14 @@ async function rewriteWithGroq(originalContent, references) {
 You are a professional content writer.
 
 Rewrite the following article to improve structure, clarity, and readability.
-Use proper headings and paragraphs. Make it SEO-friendly and professional.
+Use proper headings and paragraphs. Make it SEO-friendly.
 
 Original Article:
 ${originalContent}
 
 ${referenceText}
 
-At the end, add a section titled "References".
+Add a "References" section at the end.
 `;
 
   const completion = await groq.chat.completions.create({
@@ -80,8 +79,8 @@ At the end, add a section titled "References".
 
 // Save updated article
 async function saveUpdatedArticle(originalArticle, updatedContent, references) {
-  await axios.post(`${API_BASE}/scrape`, {
-    title: originalArticle.title,
+  await axios.post(`${API_BASE}`, {
+    title: `${originalArticle.title} (Updated)`,
     content: updatedContent,
     type: "updated",
     references: references.map((ref) => ({
